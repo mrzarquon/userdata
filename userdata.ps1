@@ -5,7 +5,7 @@
 
 # Required environment variables
 $env:PUPPET_SERVER_NAME = "example" # Name of your Puppet Enterprise Server
-$env:PUPPET_SERVER_FQDN = "example-foo.eu-west-1.opsworks-cm.io"
+$env:PUPPET_SERVER_FQDN = "example.eu-west-1.opsworks-cm.io"
 $env:REGION = "eu-west-1" # Region of Puppet Enterprise Server (us-east-1, us-west-1 or eu-west-1)
 $env:PP_INSTANCE_ID = "$(Invoke-WebRequest http://169.254.169.254/latest/meta-data/instance-id)" # Use EC2 Instance ID as Puppet Enterprise Node Name
 $env:DAEMONSPLAY = 'true'
@@ -172,7 +172,7 @@ function associatenode {
   $CSR_CONTENT = (Get-Content -Path $PP_CSR_PATH) -join "`n"
 
   Write-Host "Submitting Puppet Certificate"
-  $ASSOCIATE_TOKEN = $(aws opsworks-cm --region $env:REGION associate-node --server-name $env:PUPPET_SERVER_NAME --node-name $CERTNAME --engine-attributes Name=PUPPET_NODE_CSR,Value="""$CSR_CONTENT""" --query "NodeAssociationStatusToken" --output text)
+  $ASSOCIATE_TOKEN = $(aws opsworks-cm --region $env:REGION associate-node --server-name $env:PUPPET_SERVER_NAME --node-name $CERTNAME --engine-attributes "Name=PUPPET_NODE_CSR,Value=$($CSR_CONTENT)" --query "NodeAssociationStatusToken" --output text)
 
   #wait
   Write-Host "Waiting on OpsWorks for Puppet Certificate"
